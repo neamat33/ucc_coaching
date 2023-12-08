@@ -1,0 +1,92 @@
+@extends('admin.layouts.app')
+@section('page-title','income List')
+@section('content')
+<div class="body d-flex py-lg-3 py-md-2">
+    <div class="container-xxl">
+        
+        <form action="{{ route('income.store') }}" method="post">
+        @csrf
+        <div class="row clearfix g-3">
+
+
+            <div class="col-lg-12">
+                <div class="card mb-3">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center bg-transparent border-bottom-0">
+                        <h6 class="m-0 fw-bold">Income Information</h6>
+                    </div>
+                    <div class="card-body">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-md-6">
+                                    <label class="form-label">income title</label><label class="text-danger"> *</label>
+                                    <input type="text" name="title" class="form-control" required="" value="{{ old('title') }}">
+                                    <span class="text-danger">{{ $errors->has('title') ? $errors->first('title') : '' }}</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Category</label><label class="text-danger"> *</label>
+                                    <select class="form-select" id="category_id" name="category_id" aria-label="Default select example" required>
+                                        <option selected="">Open this select category name</option>
+                                        @foreach ($category as $value)
+                                            <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="form-label">Amount</label><label class="text-danger"> *</label>
+                                    <input type="number" id="amount" name="amount" class="form-control" value="{{ old('amount') }}" required="">
+                                    <span class="text-danger">{{ $errors->has('amount') ? $errors->first('amount') : '' }}</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Reference No.</label>
+                                    <input type="text" id="reference_no" name="reference_no" class="form-control" value="{{ old('reference_no') }}">
+                                    <span class="text-danger">{{ $errors->has('reference_no') ? $errors->first('reference_no') : '' }}</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">income Date</label>
+                                    <input type="date" name="date" class="form-control pull-right datepicker" value="@php echo date("Y-m-d") @endphp" required="">
+                                    <span class="text-danger">{{ $errors->has('date') ? $errors->first('date') : '' }}</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Note</label>
+                                    <textarea class="form-control" name="note"></textarea>
+                                    <span class="text-danger">{{ $errors->has('note') ? $errors->first('note') : '' }}</span>
+                                </div>
+                            </div>
+                            <button type="submit" id="prs-submit" class="btn btn-primary mt-4 text-uppercase px-5">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div><!-- Row End -->
+        </form>
+    </div>
+</div>
+
+<!-- Jquery Page Js -->
+<script>
+    $(document).ready(function() {
+      $("#category_id").select2();
+    });
+    $(function(){
+
+        $("#barcode").on("keyup", function() {
+            let barcode = $(this).val();
+            $.ajax({
+                url: "{{ url('admin/check-space-list') }}",
+                type: "GET",
+                data: {
+                    "barcode": barcode,
+                },
+                success: function(res) {
+                    $("#shelf-info").html(res);
+                }
+            });
+        });
+    });
+</script>
+<script src="{{ asset('admin') }}/js/template.js"></script>
+<script>
+    $(function(){
+        $("#product_id").select2();
+    });
+</script>
+@endsection
