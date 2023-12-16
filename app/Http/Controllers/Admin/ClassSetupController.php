@@ -25,16 +25,16 @@ class ClassSetupController extends Controller
         $class = (new ClassService)->get();
         $class_setup = $this->ClassSetupService->get();
 
-        if(session('role_id')==1){ 
+        if (session('role_id') == 1) {
             $data['class_setup'] = $class_setup->get();
             $data['branch'] = $branch->get();
             $data['sections'] = $section->get();
             $data['classes'] = $class->get();
-        }else{
-            $data['class_setup'] = $class_setup->where('branch_id',session('branch_id'))->get();
-            $data['branch'] = $branch->where('id_branch',session('branch_id'))->get();
-            $data['sections'] = $section->where('id_section',session('branch_id'))->get();
-            $data['classes'] = $class->where('id_class',session('branch_id'))->get();
+        } else {
+            $data['class_setup'] = $class_setup->where('branch_id', session('branch_id'))->get();
+            $data['branch'] = $branch->where('id_branch', session('branch_id'))->get();
+            $data['sections'] = $section->where('id_section', session('branch_id'))->get();
+            $data['classes'] = $class->where('id_class', session('branch_id'))->get();
         }
         return view('admin.class_setup.list', $data);
     }
@@ -44,10 +44,10 @@ class ClassSetupController extends Controller
         $data = $request->all();
         $sections = $data['section_id'];
         try {
-            foreach($sections as $section){
-                $this->ClassSetupService->add($data,$section);
+            foreach ($sections as $section) {
+                $this->ClassSetupService->add($data, $section);
             }
-        
+
             return redirect()->route('class_settings.index')->with('success', 'Class Created Successfully');
         } catch (\Exception $e) {
             $error_message = $e->getMessage();
@@ -55,17 +55,33 @@ class ClassSetupController extends Controller
         }
     }
 
-    public function edit()
+    public function edit($branch_id, $id)
     {
-       $id = $_GET['id'];
-       return DB::table('academic_class')->where('id_class', $id)->where('status_id', 1)->first();
+
+        $section = (new SectionService)->get();
+        $data['single'] = $this->ClassSetupService->edit($branch_id, $id);
+
+        if (session('role_id') == 1) {
+            $data['sections'] = $section->get();
+        } else {
+            $data['sections'] = $section->where('branch_id', session('branch_id'))->get();
+        }
+        return view('admin.class_setup.edit', $data);
     }
 
     public function update(Request $request, $id)
     {
         $data = $request->all();
+        $sections = $data['section_id'];
+        $branch_id = $data['branch_id'];
+        $class_id = $data['class_id'];
         try {
-            $this->ClassSetupService->update($data, $id);
+            $update = $this->ClassSetupService->update($branch_id, $class_id);
+            if ($update) {
+                foreach ($sections as $section) {
+                    $this->ClassSetupService->add($data, $section);
+                }
+            }
             return redirect()->route('class_settings.index')->with('success', 'Class Update Successfully');
         } catch (\Exception $e) {
             $error_message = $e->getMessage();
@@ -78,7 +94,7 @@ class ClassSetupController extends Controller
         try {
             $this->ClassSetupService->delete($id);
             return redirect()->route('class_settings.index')->with('success', 'Deleted successfully');
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             $error_message = $e->getMessage();
             return redirect()->route('class_settings.index')->with('error', $error_message);
         }

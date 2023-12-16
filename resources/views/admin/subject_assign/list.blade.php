@@ -16,9 +16,9 @@
                     <thead>
                         <tr>
                             <th>SL.</th>
+                            <th>Branch Name</th>
                             <th>Class Name</th>
                             <th>Subject Name</th>
-                            <th>Branch Name</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -28,24 +28,27 @@
                         @foreach($subject_assign as $key=>$item)
                         <tr>
                             <td>{{ ++$key }}</td>
+                            <td>{{ $item->branch_name }}</td>
                             <td>{{ $item->class_name }}</td>
                             <td>{{ $item->subject_name }}</td>
-                            <td>{{ $item->branch_name }}</td>
+                            
                             <td>
                                         
                                 @if ($item->status_id == 1)
-                                    <span class="badge bg-success set-status" id="status_{{ $item->id_assign}}"
-                                        onclick="setActive({{ $item->id_assign}})">Active</span>
+                                    <span class="badge bg-success set-status" id="status_{{ $item->class_id}}"
+                                        onclick="setActive({{ $item->class_id}})">Active</span>
                                 @else
-                                    <span class="badge bg-danger set-status" id="status_{{ $item->id_assign}}"
-                                        onclick="setActive({{ $item->id_assign}})">Inactive</span>
+                                    <span class="badge bg-danger set-status" id="status_{{ $item->class_id}}"
+                                        onclick="setActive({{ $item->class_id}})">Inactive</span>
                                 @endif
 
                             </td>
-                            <td><a data-id="{{ $item->id_assign}}" data-bs-toggle="modal" data-bs-target="#EditModal"
-                                class="btn btn-primary btn-circle btn-sm editBtn">
-                                <i class="fa fa-edit text-white"></i>
-                            </a></td>
+                            <td>
+                                <a href="{{ url('admin/subject_assign_edit')}}/{{ $item->id_branch }}/{{$item->class_id}}" 
+                                    class="btn btn-primary btn-circle btn-sm editBtn">
+                                    <i class="fa fa-edit text-white"></i>
+                                </a>
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -65,7 +68,8 @@
                         <div class="modal-body">
                             
                             <div class="form-group">
-                                <label for=""><b>Branch Name </b></label>
+                                <label for=""><b>Branch Name </b></label><br>
+
                                 <select name="branch_id" class="form-select">
                                     <option value="">Select</option>
                                     @foreach($branch as $value)
@@ -74,7 +78,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for=""><b>Class Name</b></label>
+                                <label for=""><b>Class Name</b></label><br>
                                 <select name="class_id" class="form-select">
                                     <option value="">Select</option>
                                     @foreach($classes as $class)

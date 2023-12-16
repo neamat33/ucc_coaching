@@ -20,6 +20,8 @@ class SubjectAssignController extends Controller
 
     public function index()
     {
+
+        
         $branch = (new BranchService)->get();
         $subject = (new SubjectService)->get();
         $class = (new ClassService)->get();
@@ -55,17 +57,33 @@ class SubjectAssignController extends Controller
         }
     }
 
-    public function edit()
+    public function edit($branch_id, $id)
     {
-       $id = $_GET['id'];
-       return DB::table('academic_class')->where('id_class', $id)->where('status_id', 1)->first();
+       $subject = (new SubjectService)->get();
+       $data['single'] = $this->SubjectAssignService->edit($branch_id,$id);
+
+        if (session('role_id') == 1) {
+            $data['subjects'] = $subject->get();
+        } else {
+            $data['subjects'] = $subject->where('branch_id', session('branch_id'))->get();
+        }
+        return view('admin.subject_assign.edit', $data);
     }
 
     public function update(Request $request, $id)
     {
         $data = $request->all();
         try {
-            $this->SubjectAssignService->update($data, $id);
+            $branch_id = $data['branch_id'];
+            $class_id = $data['class_id'];
+            $update = $this->SubjectAssignService->update($branch_id, $class_id);
+
+            if ($update) {
+                $subjects = $data['subject_id'];
+                foreach ($subjects as $subject) {
+                    $this->SubjectAssignService->add($data,$subject);
+                }
+            }
             return redirect()->route('subject_assign.index')->with('success', 'Class Update Successfully');
         } catch (\Exception $e) {
             $error_message = $e->getMessage();

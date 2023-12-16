@@ -13,7 +13,7 @@ use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\ShiftController;
 use App\Http\Controllers\Admin\ClassSetupController;
 use App\Http\Controllers\Admin\SubjectAssignController;
-use App\Http\Controllers\Admin\OccupationController;
+use App\Http\Controllers\Admin\StudentController;
 use Illuminate\Support\Facades\Route;
 Route::get('/', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
 //admin authentication system
@@ -89,7 +89,7 @@ Route::group(['prefix' => 'admin'], function () {
         //class Setup
         Route::get('class-setup',[ClassSetupController::class,'index'])->name('class_settings.index');
         Route::post('class-setup-save',[ClassSetupController::class,'store'])->name('class_settings.store');
-        Route::get('class_setup_edit',[ClassSetupController::class,'edit']);
+        Route::get('class_setup_edit/{branch_id}/{id}',[ClassSetupController::class,'edit']);
         Route::put('class_setup/update/{id}',[ClassSetupController::class,'update']);
         Route::get('class_setup/delete/{id}', [ClassSetupController::class,'destroy'])->name('class_setup.delete');
         //rooms
@@ -124,14 +124,15 @@ Route::group(['prefix' => 'admin'], function () {
         //Subject Assign
         Route::get('subject-assign',[SubjectAssignController::class,'index'])->name('subject_assign.index');
         Route::post('subject-assign-save',[SubjectAssignController::class,'store'])->name('subject_assign.store');
-        Route::get('subject_assign_edit',[SubjectAssignController::class,'edit']);
+        Route::get('subject_assign_edit/{branch_id}/{id}',[SubjectAssignController::class,'edit']);
         Route::put('subject_assign/update/{id}',[SubjectAssignController::class,'update']);
         Route::get('subject_assign/delete/{id}', [SubjectAssignController::class,'destroy'])->name('subject_assign.delete');
-        // Route::resource('occupations',OccupationController::class);
-        // Route::get('occupation_edit',[OccupationController::class,'edit']);
-        // Route::put('occupations/update/{id}',[OccupationController::class,'update']);
-        // Route::get('occupations/delete/{id}', [OccupationController::class,'destroy'])->name('positions.delete');
        
+        // Students
+        Route::get('student-registrations',[StudentController::class,'create'])->name('students.create');
+        Route::post('student-save',[StudentController::class,'store'])->name('students.store');
+        Route::get('get_section',[StudentController::class,'get_section']);
+
         
     });
 });

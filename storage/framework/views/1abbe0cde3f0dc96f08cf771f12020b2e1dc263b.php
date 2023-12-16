@@ -16,9 +16,9 @@
                     <thead>
                         <tr>
                             <th>SL.</th>
+                            <th>Branch Name</th>
                             <th>Class Name</th>
                             <th>Subject Name</th>
-                            <th>Branch Name</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -28,24 +28,27 @@
                         <?php $__currentLoopData = $subject_assign; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key=>$item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <tr>
                             <td><?php echo e(++$key); ?></td>
+                            <td><?php echo e($item->branch_name); ?></td>
                             <td><?php echo e($item->class_name); ?></td>
                             <td><?php echo e($item->subject_name); ?></td>
-                            <td><?php echo e($item->branch_name); ?></td>
+                            
                             <td>
                                         
                                 <?php if($item->status_id == 1): ?>
-                                    <span class="badge bg-success set-status" id="status_<?php echo e($item->id_assign); ?>"
-                                        onclick="setActive(<?php echo e($item->id_assign); ?>)">Active</span>
+                                    <span class="badge bg-success set-status" id="status_<?php echo e($item->class_id); ?>"
+                                        onclick="setActive(<?php echo e($item->class_id); ?>)">Active</span>
                                 <?php else: ?>
-                                    <span class="badge bg-danger set-status" id="status_<?php echo e($item->id_assign); ?>"
-                                        onclick="setActive(<?php echo e($item->id_assign); ?>)">Inactive</span>
+                                    <span class="badge bg-danger set-status" id="status_<?php echo e($item->class_id); ?>"
+                                        onclick="setActive(<?php echo e($item->class_id); ?>)">Inactive</span>
                                 <?php endif; ?>
 
                             </td>
-                            <td><a data-id="<?php echo e($item->id_assign); ?>" data-bs-toggle="modal" data-bs-target="#EditModal"
-                                class="btn btn-primary btn-circle btn-sm editBtn">
-                                <i class="fa fa-edit text-white"></i>
-                            </a></td>
+                            <td>
+                                <a href="<?php echo e(url('admin/subject_assign_edit')); ?>/<?php echo e($item->id_branch); ?>/<?php echo e($item->class_id); ?>" 
+                                    class="btn btn-primary btn-circle btn-sm editBtn">
+                                    <i class="fa fa-edit text-white"></i>
+                                </a>
+                            </td>
                         </tr>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </tbody>
@@ -65,7 +68,8 @@
                         <div class="modal-body">
                             
                             <div class="form-group">
-                                <label for=""><b>Branch Name </b></label>
+                                <label for=""><b>Branch Name </b></label><br>
+
                                 <select name="branch_id" class="form-select">
                                     <option value="">Select</option>
                                     <?php $__currentLoopData = $branch; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -74,7 +78,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for=""><b>Class Name</b></label>
+                                <label for=""><b>Class Name</b></label><br>
                                 <select name="class_id" class="form-select">
                                     <option value="">Select</option>
                                     <?php $__currentLoopData = $classes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $class): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
