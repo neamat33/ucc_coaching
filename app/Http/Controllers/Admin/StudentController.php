@@ -19,19 +19,33 @@ class StudentController extends Controller
         $this->StudentService = $StudentService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $branch = (new BranchService)->get();
-        $class = $this->StudentService->get();
-
+        $class = (new ClassService)->get();
+        $section = (new SectionService)->get();
+        $students = $this->StudentService->get();
+        if($request->student_name){
+            $data['students'] = $students->where('student.student_name','like','%'.$request->student_name.'%');
+        }
+        if($request->mobile){
+            $data['students'] = $students->where('student.mobile',$request->mobile);
+        }
+        if($request->class_id){
+            $data['students'] = $students->where('ac.id_class',$request->class_id);
+        }
+        if($request->section_id){
+            $data['students'] = $students->where('section.id_section',$request->section_id);
+        }
         if(session('role_id')==1){ 
             $data['classes'] = $class->get();
-
+            $data['sections'] = $section->get();
+            $data['students'] = $students->paginate(5);            
         }else{
-            $data['classes'] = $class->where('branch_id',session('branch_id'))->get();
-            $data['branch'] = $branch->where('id_branch',session('branch_id'))->get();
+            $data['students'] = $students->where('branch_id',session('branch_id'))->paginate(5);
         }
-        return view('admin.class.list', $data);
+        
+
+        return view('admin.student.list', $data);
     }
 
     public function create()
@@ -39,18 +53,15 @@ class StudentController extends Controller
 
         $branch = (new BranchService)->get();
         $class = (new ClassService)->get();
-        $section = (new SectionService)->get();
         $shift = (new ShiftService)->get();
 
         if(session('role_id')==1){ 
             $data['branches'] = $branch->get();
             $data['classes'] = $class->get();
-            $data['sections'] = $section->get();
             $data['shifts'] = $shift->get();
         }else{
             $data['branches'] = $branch->where('id_branch',session('branch_id'))->get();
             $data['classes'] = $class->where('branch_id',session('branch_id'))->get();
-            $data['sections'] = $section->where('branch_id',session('branch_id'))->get();
             $data['shifts'] = $shift->where('branch_id',session('branch_id'))->get();
         }
         return view('admin.student.create', $data);
@@ -65,7 +76,7 @@ class StudentController extends Controller
             'dob' => 'required',
         ]);
         
-       // try {
+        try {
             $data = $request->all();
             $id = $this->StudentService->add($data);
 
@@ -85,11 +96,11 @@ class StudentController extends Controller
                 }
             }
             
-        return redirect()->back()->with('success', 'Class Created Successfully');
-        // } catch (\Exception $e) {
-        //     $error_message = $e->getMessage();
-        //     return redirect()->route('classes.index')->with('error', $error_message);
-        // }
+            return redirect()->back()->with('success', 'Class Created Successfully');
+        } catch (\Exception $e) {
+            $error_message = $e->getMessage();
+            return redirect()->route('students.create')->with('error', $error_message);
+        }
     }
 
     public function edit()

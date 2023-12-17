@@ -129,6 +129,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('subject_assign/delete/{id}', [SubjectAssignController::class,'destroy'])->name('subject_assign.delete');
        
         // Students
+        Route::get('student-list',[StudentController::class,'index'])->name('students.index');
         Route::get('student-registrations',[StudentController::class,'create'])->name('students.create');
         Route::post('student-save',[StudentController::class,'store'])->name('students.store');
         Route::get('get_section',[StudentController::class,'get_section']);

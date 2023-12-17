@@ -9,12 +9,15 @@ class StudentService
 
     public function get()
     {
-        return DB::table('academic_class as ac')
-        ->select('ac.*','ab.branch_name')
-        ->leftJoin('academic_branch as ab','ab.id_branch','ac.branch_id')
+        return DB::table('student_info as student')
+        ->select('student.*','ab.branch_name','ac.class_name','section.section_name','shift.shift_name')
+        ->leftJoin('student_class_assignment as sca','student.id_student','sca.student_id')
+        ->leftJoin('academic_branch as ab','ab.id_branch','sca.branch_id')
+        ->leftJoin('academic_class as ac','ac.id_class','sca.class_id')
+        ->leftJoin('academic_section as section','section.id_section','sca.section_id')
+        ->leftJoin('academic_shift as shift','shift.id_shift','sca.shift_id')
         ->where('ac.status_id',1);
-
-            
+        
     }
     public function add($data){
         return DB::table('student_info')->insertGetId([
